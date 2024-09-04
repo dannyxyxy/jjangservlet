@@ -1,0 +1,156 @@
+package com.jjangplay.notice.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
+import com.jjangplay.main.controller.Init;
+import com.jjangplay.notice.service.NoticeDeleteService;
+import com.jjangplay.notice.service.NoticeListService;
+import com.jjangplay.notice.service.NoticeUpdateService;
+import com.jjangplay.notice.service.NoticeViewService;
+import com.jjangplay.notice.service.NoticeWriteService;
+import com.jjangplay.notice.vo.NoticeVO;
+import com.jjangplay.util.exe.Execute;
+import com.jjangplay.util.io.In;
+import com.jjangplay.util.io.NoticePrint;
+import com.jjangplay.util.page.PageObject;
+
+public class NoticeController {
+
+	public String execute(HttpServletRequest request) {
+		
+		// uri
+		String uri = request.getRequestURI();
+		String jsp=null;
+		
+		// 데이터 수집을 위한 변수
+		Object result = null;
+		
+		// 입력 받는 데이터 (글번호를 위한)
+		Long no = 0L;
+		
+		try {
+			switch (uri) {
+			case "/notice/list.do":
+				// NoticeController -> execute -> NoticeListService
+				// -> NoticeDAO.list()
+				System.out.println("1. 공지사항 리스트");
+				
+				PageObject pageObject = PageObject.getInstance(request);
+				
+				// DB에서 데이터 가져오기
+				result = Execute.execute(Init.get(uri), pageObject);
+				request.setAttribute("list", result);
+				request.setAttribute("pageObject", pageObject);
+				jsp="notice/list";
+				break;
+			case "/notice/view.do":
+				System.out.println("2. 공지사항 글보기");
+				// NoticeController -> execute -> NoticeViewService
+				// -> NoticeDAO.view()
+				// 공지사항은 조회수가 없으므로 increase()메서드가 없다.
+				no = Long.parseLong(request.getParameter("no"));
+				// DB에서 데이터를 가져오기
+				result = Execute.execute(Init.get(uri), no);
+				request.setAttribute("vo", result);
+				jsp="notice/view";
+				
+				break;
+			case "/notice/writeForm.do":
+				System.out.println("3.글쓰기폼");
+				jsp="notice/writeForm";
+				break;
+			
+			case "/notice/write.do":
+				System.out.println("3. 공지사항 글쓰기");
+				// 데이터 수집
+				// 제목, 내용, 게시시작일, 게시종료일
+				String title = request.getParameter("title");
+				String content = request.getParameter("content");
+				String startDate = request.getParameter("startDate");
+				String endDate = request.getParameter("endDate");
+				
+				NoticeVO vo = new NoticeVO();
+				vo.setTitle(title);
+				vo.setContent(content);
+				vo.setStartDate(startDate);
+				vo.setEndDate(endDate);
+				// NoticeController -> execute -> NoticeWriteService
+				// -> NoticeDAO.write()
+				Execute.execute(Init.get(uri), vo);
+				jsp="redirect:list.do";
+				break;
+				
+			case "/notice/updateForm.do":
+			    System.out.println("글수정폼");
+			    no = Long.parseLong(request.getParameter("no"));
+			    
+			    // 수정할 데이터 가져오기 (view 서비스를 이용해서)
+			    result = Execute.execute(Init.get("/notice/view.do"), no);
+			    request.setAttribute("vo", result);
+			    jsp="notice/updateForm";
+			    break;
+
+			case "/notice/update.do":
+			    System.out.println("4. 공지사항 글수정");
+			    no = Long.parseLong(request.getParameter("no")); // 여기서 no 값을 다시 가져옴
+			    title = request.getParameter("title");
+			    content = request.getParameter("content");
+			    startDate = request.getParameter("startDate");
+			    endDate = request.getParameter("endDate");
+			    
+			    vo = new NoticeVO();
+			    vo.setNo(no);  // 가져온 no 값을 설정
+			    vo.setTitle(title);
+			    vo.setContent(content);
+			    vo.setStartDate(startDate);
+			    vo.setEndDate(endDate);
+			    
+			    // DB에 수정 내용 적용
+			    result = Execute.execute(Init.get(uri), vo);
+			    if ((Integer)result != 0) {
+			        System.out.println("*** 수정이 완료되었습니다. ***");
+			    }
+			    jsp="redirect:view.do?no=" + no;
+			    break;
+
+				
+			case "/notice/delete.do":
+				System.out.println("5. 공지사항 글삭제");
+				// 삭제할 글번호 수집
+				no = Long.parseLong(request.getParameter("no"));
+				
+				// DB처리
+				result = Execute.execute(Init.get(uri), no);
+				if ((Integer)result != 0) {
+					System.out.println();
+					System.out.println("***  글이 삭제 되었습니다. ***");
+				}
+				jsp="redirect:list.do";
+				break;
+			
+			default:
+				jsp="error/404"; break;
+			} // end of switch(menu)
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
+			System.out.println("$%@    <오류 출력> ");
+			System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
+			// getSimpleName() : 클래스 이름만 보여주는 메서드(패키지는 안보여준다)
+			System.out.println("$%@ 타입 : " + e.getClass().getSimpleName());
+			// getMessage() : 예외의 내용을 보여주는 메서드
+			System.out.println("$%@ 내용 : " + e.getMessage() );
+			System.out.println("$%@ 조치 : 데이터 확인해 보세요");
+			System.out.println("$%@       계속 오류가 나면 전산담당자에게 문의하세요.");
+			System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
+		} // end of try~catch
+		
+		
+		return jsp;
+		
+	} // end of execute()
+} // end of class
