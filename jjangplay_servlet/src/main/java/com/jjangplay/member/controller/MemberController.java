@@ -85,6 +85,13 @@ public class MemberController {
 				session.setAttribute("msg", "로그인 처리가 되었습니다.");
 				jsp="redirect:/board/list.do";
 				break;	
+			
+			case "/member/logout.do":
+				System.out.println("=== 로그아웃 처리 ===");
+				session.removeAttribute("login");
+				session.setAttribute("msg", "로그아웃 되었습니다.");
+				jsp="redirect:/board/list.do";
+				break;
 				
 			case "/member/list.do":
 				System.out.println("1.회원 리스트");
@@ -96,8 +103,8 @@ public class MemberController {
 				//받아온 데이터를 담는다
 				request.setAttribute("list", result);
 				jsp="member/list";
-				
 				break;
+				
 			case "2":
 				System.out.println("2.내 정보 보기");
 				// Login인 되어있는지 확인

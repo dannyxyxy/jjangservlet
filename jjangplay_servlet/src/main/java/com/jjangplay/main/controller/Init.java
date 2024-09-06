@@ -9,6 +9,16 @@ import com.jjangplay.board.service.BoardListService;
 import com.jjangplay.board.service.BoardUpdateService;
 import com.jjangplay.board.service.BoardViewService;
 import com.jjangplay.board.service.BoardWriteService;
+import com.jjangplay.boardreply.dao.BoardReplyDAO;
+import com.jjangplay.boardreply.service.BoardReplyDeleteService;
+import com.jjangplay.boardreply.service.BoardReplyListService;
+import com.jjangplay.boardreply.service.BoardReplyUpdateService;
+import com.jjangplay.boardreply.service.BoardReplyWriteService;
+import com.jjangplay.image.dao.ImageDAO;
+import com.jjangplay.image.service.ImageDeleteService;
+import com.jjangplay.image.service.ImageListService;
+import com.jjangplay.image.service.ImageUpdateService;
+import com.jjangplay.image.service.ImageWriteService;
 import com.jjangplay.main.dao.DAO;
 import com.jjangplay.main.service.Service;
 import com.jjangplay.member.dao.MemberDAO;
@@ -56,6 +66,16 @@ public class Init {
 		serviceMap.get("/board/update.do").setDAO(daoMap.get("boardDAO"));
 		serviceMap.get("/board/delete.do").setDAO(daoMap.get("boardDAO"));
 		
+		daoMap.put("boardReplyDAO", new BoardReplyDAO());
+		serviceMap.put("/boardreply/list.do", new BoardReplyListService());
+		serviceMap.get("/boardreply/list.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.put("/boardreply/write.do", new BoardReplyWriteService());
+		serviceMap.get("/boardreply/write.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.put("/boardreply/update.do", new BoardReplyUpdateService());
+		serviceMap.get("/boardreply/update.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.put("/boardreply/delete.do", new BoardReplyDeleteService());
+		serviceMap.get("/boardreply/delete.do").setDAO(daoMap.get("boardReplyDAO"));
+		
 		daoMap.put("noticeDAO", new NoticeDAO());
 		serviceMap.put("/notice/list.do", new NoticeListService());
 		serviceMap.put("/notice/view.do", new NoticeViewService());
@@ -75,6 +95,16 @@ public class Init {
 		serviceMap.get("/member/login.do").setDAO(daoMap.get("memberDAO"));
 		serviceMap.put("/member/list.do", new MemberListService());
 		serviceMap.get("/member/list.do").setDAO(daoMap.get("memberDAO"));
+		
+		daoMap.put("imageDAO", new ImageDAO());
+		serviceMap.put("/image/list.do", new ImageListService());
+		serviceMap.get("/image/list.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.put("/image/write.do", new ImageWriteService());
+		serviceMap.get("/image/write.do").setDAO(daoMap.get("ImageDAO"));
+		serviceMap.put("/image/update.do", new ImageUpdateService());
+		serviceMap.get("/boardreply/update.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.put("/image/delete.do", new ImageDeleteService());
+		serviceMap.get("/boardreply/delete.do").setDAO(daoMap.get("boardReplyDAO"));
 		
 		
 

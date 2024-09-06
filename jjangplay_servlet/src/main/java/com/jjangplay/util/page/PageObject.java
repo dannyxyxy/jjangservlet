@@ -165,6 +165,13 @@ public class PageObject {
 		return "page="+getPage()
 			+"&"+getNotPageQuery();
 	}
+
+	@Override
+	public String toString() {
+		return "PageObject [page=" + page + ", perPageNum=" + perPageNum + ", startRow=" + startRow + ", endRow="
+				+ endRow + ", perGroupPageNum=" + perGroupPageNum + ", startPage=" + startPage + ", endPage=" + endPage
+				+ ", totalPage=" + totalPage + ", totalRow=" + totalRow + ", key=" + key + ", word=" + word + "]";
+	}
 }
 
 

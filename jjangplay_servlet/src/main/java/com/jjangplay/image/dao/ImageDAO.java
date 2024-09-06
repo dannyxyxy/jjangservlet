@@ -1,4 +1,4 @@
-package com.jjangplay.board.dao;
+package com.jjangplay.image.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -7,12 +7,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import com.jjangplay.board.vo.BoardVO;
+import com.jjangplay.image.vo.ImageVO;
 import com.jjangplay.main.dao.DAO;
 import com.jjangplay.util.db.DB;
 import com.jjangplay.util.page.PageObject;
 import com.jjangplay.util.page.ReplyPageObject;
 
-public class BoardDAO extends DAO {
+public class ImageDAO extends DAO {
 
 	// 필요한 객체는 상속을 받아 사용합니다. : extends DAO
 	// 접속정보는 DB클래스를 사용해서 Connection 을 가져오는 메서드만 사용
@@ -57,10 +58,10 @@ public class BoardDAO extends DAO {
 
 	// 1.리스트
 	// [BoardController] -> (Execute) -> BoardListService -> [BoardDAO.list()]
-	public List<BoardVO> list(PageObject pageObject) throws Exception {
-		List<BoardVO> list = null;
+	public List<ImageVO> list(PageObject pageObject) throws Exception {
+		List<ImageVO> list = null;
 		
-		System.out.println("---- BoardDAO.list() 시작 ----");
+		System.out.println("---- ImageDAO.list() 시작 ----");
 		try {
 			// 1. 드라이버확인
 			// 드라이버 확인은 프로그램이 시작될 때 한번만 필요 - MAIN에 구현
@@ -71,7 +72,7 @@ public class BoardDAO extends DAO {
 			pstmt = con.prepareStatement(getListSQL(pageObject));
 			// 검색에 대한 데이터 세팅
 			int idx = 0;
-			idx = setSearchDate(pageObject, pstmt, idx);
+			//idx = setSearchDate(pageObject, pstmt, idx);
 			pstmt.setLong(++idx, pageObject.getStartRow());
 			pstmt.setLong(++idx, pageObject.getEndRow());
 			// 5. 실행 및 데이터 받기
@@ -80,15 +81,16 @@ public class BoardDAO extends DAO {
 			if (rs != null) {
 				while (rs.next()) {
 					// list 가 null 이면 ArrayList를 생성해서 저장할 수 있도록 만든다.
-					if (list == null) list = new ArrayList<BoardVO>();
+					if (list == null) list = new ArrayList<ImageVO>();
 					//rs -> BoardVO
-					BoardVO vo = new BoardVO(); // 클래스를 사용하는 기본형식
+					ImageVO vo = new ImageVO(); // 클래스를 사용하는 기본형식
 					// BoardVO 안의 no 변수에 rs 안에 no 컬럼에 저장되어있는 값을 넘겨받는다  
 					vo.setNo(rs.getLong("no"));
 					vo.setTitle(rs.getString("title"));
-					vo.setWriter(rs.getString("writer"));
+					vo.setId(rs.getString("id"));
+					vo.setName(rs.getString("name"));
 					vo.setWriteDate(rs.getString("writeDate"));
-					vo.setHit(rs.getLong("hit"));
+					vo.setFileName(rs.getString("fileName"));
 					
 					// vo->list 에 담는다.
 					list.add(vo);
@@ -208,7 +210,7 @@ public class BoardDAO extends DAO {
 	
 	// 3. 글쓰기
 	// [BoardController] -> (Execute) -> BoardWriteService -> [BoardDAO.write()]
-	public int write(BoardVO vo) throws Exception {
+	public int write(ImageVO obj) throws Exception {
 		// 결과를 저장하는 변수선언
 		int result = 0;
 		
@@ -220,10 +222,10 @@ public class BoardDAO extends DAO {
 			// 4. 실행객체에 데이터 세팅
 			pstmt = con.prepareStatement(WRITE);
 			// BoardVO vo변수 안에 있는 값을 getter를 이용해서 세팅합니다.
-			pstmt.setString(1, vo.getTitle());
-			pstmt.setString(2, vo.getContent());
-			pstmt.setString(3, vo.getWriter());
-			pstmt.setString(4, vo.getPw());
+			pstmt.setString(1, obj.getTitle());
+			pstmt.setString(2, obj.getContent());
+			//pstmt.setString(3, obj.getWriter());
+			//pstmt.setString(4, obj.getPw());
 			// 5. 실행 // insert, update, delete => executeUpdate()
 			result = pstmt.executeUpdate();
 			// 6. 데이터 보기 및 저장(보관)
@@ -315,7 +317,8 @@ public class BoardDAO extends DAO {
 	
 	private String getListSQL(PageObject pageObject) {
 		String sql = LIST;
-		sql += getSearch(pageObject);
+		//sql += getSearch(pageObject);
+		sql += " and (m.id=i.writerId) ";
 		sql += " order by no desc)) ";
 		sql += " where rnum>=? and rnum<=?";
 		return sql;
@@ -362,17 +365,18 @@ public class BoardDAO extends DAO {
 //			+ " where rnum>=? and rnum<=?";
 	
 	final String LIST = ""
-			+ " select no, title, writer, writeDate, hit from "
-			+ " (select rownum rnum, no, title, writer, writeDate, hit from "
-			+ " (select no, title, writer, "
-			+ " to_char(writeDate, 'yyyy-dd-mm') writeDate, hit "
-			+ " from board ";
+			+ " select no, title, id, name, writeDate, fileName from "
+			+ " (select rownum rnum, no, title, id, name, writeDate, fileName from "
+			+ " (select i.no, i.title, i.writerId id, m.name, "
+			+ " to_char(i.writeDate, 'yyyy-dd-mm') writeDate, i.fileName "
+			+ " from image i, member m "
+			+ " where 1=1 ";
 	
-	final String TOTALROW = "select count(*) from board";
+	final String TOTALROW = "select count(*) from image";
 
 	final String INCREASE = "update board set hit = hit + 1 "
 			+ " where no = ?";
-	final String VIEW = "select no, title, content, writer, writeDate, hit "
+	final String VIEW = "select no, title, id, name, writeDate, fileName "
 			+ " from board where no = ?"; 
 	final String WRITE = "insert into board "
 			+ " (no, title, content, writer, pw) "

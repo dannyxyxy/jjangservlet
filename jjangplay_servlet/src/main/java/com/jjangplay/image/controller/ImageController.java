@@ -1,8 +1,9 @@
-package com.jjangplay.board.controller;
+package com.jjangplay.image.controller;
 
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.jjangplay.board.service.BoardDeleteService;
 import com.jjangplay.board.service.BoardListService;
@@ -10,19 +11,23 @@ import com.jjangplay.board.service.BoardUpdateService;
 import com.jjangplay.board.service.BoardViewService;
 import com.jjangplay.board.service.BoardWriteService;
 import com.jjangplay.board.vo.BoardVO;
+import com.jjangplay.image.vo.ImageVO;
 import com.jjangplay.main.controller.Init;
+import com.jjangplay.member.vo.LoginVO;
 import com.jjangplay.util.exe.Execute;
 import com.jjangplay.util.io.BoardPrint;
 import com.jjangplay.util.io.In;
 import com.jjangplay.util.page.PageObject;
 import com.jjangplay.util.page.ReplyPageObject;
+import com.oreilly.servlet.MultipartRequest;
+import com.oreilly.servlet.multipart.DefaultFileRenamePolicy;
 
 // Board(일반게시판) 의 메뉴를 선택하고, 데이터 수집(기능별), 예외처리
-public class BoardController {
+public class ImageController {
 
 	@SuppressWarnings("unchecked")
 	public String execute(HttpServletRequest request) {
-		System.out.println("BoardController.execute() ----------------");
+		System.out.println("ImageController");
 
 	
 			// 메뉴입력(uri)
@@ -38,28 +43,40 @@ public class BoardController {
 			// 이동할 jsp 주소를 담아놀 변수
 			String jsp = null;
 			
+			HttpSession session = request.getSession();
+			LoginVO loginVO = (LoginVO)session.getAttribute("login");
+			
+			String id = null;
+			if(loginVO!=null) id=loginVO.getId();
+			
+			String savePath = "/upload/image";
+			String realSavePath = request.getServletContext().getRealPath(savePath);
+			int sizeLimit = 100*1024*1024;
+			
 			try {
 			
 				switch (uri) {
-				case "/board/list.do":
-					System.out.println("1. 일반게시판 리스트");
-					//[BoardController] -> (Execute) -> BoardListService -> BoardDAO.list()
-					System.out.println("----주소창에 localhost/board/list.do 했을때 (Start)----");
+				case "/image/list.do":
+					System.out.println("1. 이미지게시판 리스트");
+					System.out.println("----주소창에 localhost/image/list.do 했을때 (Start)----");
 					
 					// 페이지 처리를 위한 객체, 넘어오는 페이지와 검색정보를 세팅
 					PageObject pageObject = PageObject.getInstance(request);
+					String strPerPageNum = request.getParameter("perPageNum");
+					if(strPerPageNum==null) pageObject.setPerPageNum(6);
 					
-					// Init.get(uri) : /board/list.do 키값을 가지고 service 주소를 가져온다.
+					// Init.get(uri) : /image/list.do 키값을 가지고 service 주소를 가져온다.
 					result = Execute.execute(Init.get(uri), pageObject);
+					System.out.println("ImageController.execute().pageObject = "+pageObject);
 					// 가져온 데이터를 request에 담는다.
 					request.setAttribute("list", result);
 					request.setAttribute("pageObject", pageObject);
 					
-					System.out.println("----주소창에 localhost/board/list.do 했을때 (End)----");
+					System.out.println("----주소창에 localhost/image/list.do 했을때 (End)----");
 					// "/WEB-INF/views/" + board/list +".jsp"
-					jsp = "board/list";
+					jsp = "image/list";
 					break;
-				case "/board/view.do":
+				case "/image/view.do":
 					System.out.println("2. 일반게시판 글보기");
 					// 조회수증가, 상세글보기
 					//[BoardController] -> (Execute) ->
@@ -75,30 +92,33 @@ public class BoardController {
 					//댓글 페이지객체 데이터전달
 					ReplyPageObject replyPageObject = ReplyPageObject.getInstance(request);
 					request.setAttribute("replyList", 
-					Execute.execute(Init.get("/boardreply/list.do"), replyPageObject));
+					Execute.execute(Init.get("/imagereply/list.do"), replyPageObject));
 					
 					
 					jsp="board/view";
 					break;
-				case "/board/writeForm.do":
-					System.out.println("3. 일반게시판 글쓰기폼");
-					jsp="board/writeForm";
+				case "/image/writeForm.do":
+					System.out.println("3. 이미지게시판 글쓰기폼");
+					jsp="image/writeForm";
 					break;
-				case "/board/write.do":
-					System.out.println("3. 일반게시판 글쓰기");
+				case "/image/write.do":
+					System.out.println("3. 이미지게시판 업데이트");
+					
+					MultipartRequest multi = new MultipartRequest(request, realSavePath,sizeLimit,
+							"utf-8",new DefaultFileRenamePolicy());
 					
 					// 데이터 수집(키보드) : 제목, 내용, 작성자, 비밀번호
-					String title = request.getParameter("title");
-					String content = request.getParameter("content");
-					String writer = request.getParameter("writer");
-					String pw = request.getParameter("pw");
+					String title = multi.getParameter("title");
+					String content = multi.getParameter("content");
+					String fileName = multi.getParameter("imageFile");
+					
 					
 					// 입력받은 데이터를 BoardVO 안에 저장(세팅) => DB에 넘겨주기위한
-					BoardVO vo = new BoardVO();
+					ImageVO vo = new ImageVO();
 					vo.setTitle(title);
 					vo.setContent(content);
-					vo.setWriter(writer);
-					vo.setPw(pw);
+					vo.setFileName(savePath+"/"+fileName);
+					vo.setId(id);
 					
 					//[BoardController] -> (Execute) ->
 					// BoardWriteService -> BoardDAO.write()
@@ -106,43 +126,43 @@ public class BoardController {
 					//jsp정보앞에 "redirect:"가 붙어있으면 redirect로 처리, 없으면 forword
 					jsp="redirect:list.do";
 					break;
-				case "/board/updateForm.do":
+				case "/image/updateForm.do":
 					System.out.println("4. 글수정폼");
 					no=Long.parseLong(request.getParameter("no"));
 					inc=0L;
-					result = Execute.execute(Init.get("/board/view.do"),new Long[]{no, inc});
+					result = Execute.execute(Init.get("/image/view.do"),new Long[]{no, inc});
 					request.setAttribute("vo", result);
 					jsp="board/updateForm";
 					break;
 					
-				case "/board/update.do":
+				case "/image/update.do":
 					System.out.println("4. 일반게시판 글수정");
 					
 					// updateForm에서 적은 데이터가져옴
 					no = Long.parseLong(request.getParameter("no"));
 					title=request.getParameter("title");
 					content=request.getParameter("content");
-					writer=request.getParameter("writer");
-					pw=request.getParameter("pw");
+					//writer=request.getParameter("writer");
+					//pw=request.getParameter("pw");
 					
-					vo=new BoardVO();
+					vo=new ImageVO();
 					vo.setNo(no);
 					vo.setTitle(title);
 					vo.setContent(content);
-					vo.setWriter(writer);
-					vo.setPw(pw);
+					//vo.setWriter(writer);
+					//vo.setPw(pw);
 					
 					Execute.execute(Init.get(uri), vo);
 					jsp="redirect:view.do?no="+no+"&inc=0";
 					
 					break;
-				case "/board/delete.do":
+				case "/image/delete.do":
 					System.out.println("5. 일반게시판 글삭제");
 					// 데이터 수집 : 삭제할 글번호, 확인용 비밀번호
-					vo = new BoardVO();
+					vo = new ImageVO();
 					
 					vo.setNo(Long.parseLong(request.getParameter("no")));
-					vo.setPw(request.getParameter("pw"));
+					//vo.setPw(request.getParameter("pw"));
 					
 					// DB처리
 					result =Execute.execute(Init.get(uri), vo);
