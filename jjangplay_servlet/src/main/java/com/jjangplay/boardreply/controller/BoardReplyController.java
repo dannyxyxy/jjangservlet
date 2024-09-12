@@ -1,7 +1,9 @@
 package com.jjangplay.boardreply.controller;
 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 
 import com.jjangplay.boardreply.vo.BoardReplyVO;
 import com.jjangplay.main.controller.Init;
@@ -13,31 +15,34 @@ public class BoardReplyController {
 
 	@SuppressWarnings("unchecked")
 	public String execute(HttpServletRequest request) {
-		System.out.println("BoardController.execute() ----------------");
-		
+		System.out.println("BoardReplyController.execute() ----------------");
+
+		// session정보를 꺼내온다.
 		HttpSession session = request.getSession();
-	
-			// 메뉴입력(uri)
-			String uri = request.getRequestURI();
-			System.out.println("uri="+uri);
+		
+		// 메뉴입력(uri)
+		String uri = request.getRequestURI();
 			
-			// 데이터 수집을 위한 객체선언
-			// 초기값 null 을 주어서 데이터를 받았는지 체크하고 처리한다.
-			Object result = null;
+		// 데이터 수집을 위한 객체선언
+		// 초기값 null 을 주어서 데이터를 받았는지 체크하고 처리한다.
+		Object result = null;
 			
-			Long no = 0L;
+		Long no = 0L;
 			
-			// 이동할 jsp 주소를 담아놀 변수
-			String jsp = null;
+		// 이동할 jsp 주소를 담아놀 변수
+		String jsp = null;
 			
 			try {
-				ReplyPageObject pageObject = ReplyPageObject.getInstance(request);
-				
+				// 페이지 정보 받기 - 돌아갈때 view.do에 붙이기 위해서
+				ReplyPageObject pageObject
+					= ReplyPageObject.getInstance(request);
+			
 				switch (uri) {
-				
 				case "/boardreply/write.do":
-					System.out.println("3. 일반게시판 댓글등록");
+					System.out.println("3. 일반게시판 댓글 등록 처리");
 					
+					// 데이터 수집(사용자->서버) : form->input->name 
+					// 내용, 작성자, 비밀번호
 					String content = request.getParameter("content");
 					String writer = request.getParameter("writer");
 					String pw = request.getParameter("pw");
@@ -52,20 +57,26 @@ public class BoardReplyController {
 					//[BoardController] -> (Execute) ->
 					// BoardWriteService -> BoardDAO.write()
 					Execute.execute(Init.get(uri), vo);
-					//jsp정보앞에 "redirect:"가 붙어있으면 redirect로 처리, 없으면 forword
-					jsp="redirect:/board/view.do?no="+pageObject.getNo()+"&inc=0"+"&"+pageObject.getPageObject().getPageQuery()
-							+"&"+pageObject.getPageQuery();
+					
+					// jsp 정보앞에 "redirect:" 가 붙어있으면 redirect로 처리
+					// 없으면 forword
+					jsp = "redirect:/board/view.do?no=" + pageObject.getNo()
+						+ "&inc=0"
+						// 일반게시판 글보기의 페이지 및 검색정보 붙이기
+						+ "&" + pageObject.getPageObject().getPageQuery()
+						// 댓글의 페이지 정보
+						+ "&" + pageObject.getPageQuery()
+						;
 					session.setAttribute("msg", "댓글이 등록되었습니다.");
 					break;
-					
 				case "/boardreply/update.do":
-					System.out.println("4. 일반게시판 댓글수정");
+					System.out.println("4. 일반게시판 댓글수정 처리");
 					
-					// updateForm에서 적은 데이터가져옴
+					// updateForm 적은 데이터를 가져온다. (DB에 저장하기 위해)
 					Long rno = Long.parseLong(request.getParameter("rno"));
-					content=request.getParameter("content");
-					writer=request.getParameter("writer");
-					pw=request.getParameter("pw");
+					content = request.getParameter("content");
+					writer = request.getParameter("writer");
+					pw = request.getParameter("pw");
 					
 					vo = new BoardReplyVO();
 					vo.setRno(rno);
@@ -73,16 +84,22 @@ public class BoardReplyController {
 					vo.setWriter(writer);
 					vo.setPw(pw);
 					
+					
 					Execute.execute(Init.get(uri), vo);
-					jsp="redirect:/board/view.do?no="+pageObject.getNo()+"&inc=0"+"&"+pageObject.getPageObject().getPageQuery()
-							+"&"+pageObject.getPageQuery();
+					
+					jsp="redirect:/board/view.do?no="
+						+ pageObject.getNo() + "&inc=0"
+						// 일반게시판 글보기의 페이지 및 검색정보 붙이기
+						+ "&" + pageObject.getPageObject().getPageQuery()
+						// 댓글의 페이지 정보
+						+ "&" + pageObject.getPageQuery();
+					
 					session.setAttribute("msg", "댓글이 수정되었습니다.");
 					break;
-					
 				case "/boardreply/delete.do":
 					System.out.println("5. 일반게시판 댓글삭제");
-					// 데이터 수집 : 삭제할 글번호, 확인용 비밀번호
-					
+					// 데이터 수집 : 삭제할 댓글번호, 확인용 비밀번호
+					// vo 객체에 담는다.
 					vo = new BoardReplyVO();
 					vo.setRno(Long.parseLong(request.getParameter("rno")));
 					vo.setPw(request.getParameter("pw"));
@@ -103,28 +120,25 @@ public class BoardReplyController {
 						System.out.println("## " + vo.getNo() + "번 글이 삭제되지 않았습니다.");
 						System.out.println("########################");
 					}
-					jsp="redirect:/board/view.do?no="+pageObject.getNo()+"&inc=0"+"&"+pageObject.getPageObject().getPageQuery()
-							+"&"+pageObject.getPageQuery();
-					session.setAttribute("msg", "댓글이 삭제되었습니다.");
+					jsp = "redirect:/board/view.do?no=" + pageObject.getNo()
+					+ "&inc=0"
+					// 일반게시판 글보기의 페이지 및 검색정보 붙이기
+					+ "&" + pageObject.getPageObject().getPageQuery()
+					// 댓글의 페이지 정보
+					+ "&" + pageObject.getPageQuery()
+					;
+				session.setAttribute("msg", "댓글이 삭제되었습니다.");
 					break;
 
 				default:
-					System.out.println("잘못된 메뉴를 선택하셨습니다.===");
-					System.out.println("[0~5] 번호를 선택해야 합니다.===");
+					request.setAttribute("uri", uri);
+					jsp = "error/404";
 				} // end of switch
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
-				System.out.println("$%@    <오류 출력> ");
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
-				// getSimpleName() : 클래스 이름만 보여주는 메서드(패키지는 안보여준다)
-				System.out.println("$%@ 타입 : " + e.getClass().getSimpleName());
-				// getMessage() : 예외의 내용을 보여주는 메서드
-				System.out.println("$%@ 내용 : " + e.getMessage() );
-				System.out.println("$%@ 조치 : 데이터 확인해 보세요");
-				System.out.println("$%@       계속 오류가 나면 전산담당자에게 문의하세요.");
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
+				request.setAttribute("e", e);
+				jsp = "error/500";
 			}
 		
 			return jsp;

@@ -12,23 +12,20 @@
 <!-- 4. 우리가 만든 라이브러리 등록 -->
 <script type="text/javascript" src="boardInputUtil.js"></script>
 
-<!-- 2. 라이브러리 등록확인 -->
 <script type="text/javascript">
 $(function(){
+	//  2. 라이브러리 등록확인 
 	console.log("jquery loading......");
 	
+	// 이벤트 처리
 	$("#perPageNum").change(function(){
 		$("#searchForm").submit();
 	});
 	
-	//검색데이터 세팅
+	// 검색데이터 세팅
 	$("#key").val("${(empty pageObject.key)?'t':pageObject.key}");
-	$("#perPageNum").val("${(empty pageObject.perPageNum)?'10':pageObject.perPageNum}");
-	
-	
-	
-	
-	
+	$("#perPageNum")
+		.val("${(empty pageObject.perPageNum)?'10':pageObject.perPageNum}");
 	
 });
 </script>
@@ -37,7 +34,7 @@ $(function(){
 <body>
 
 <div class="container p-3 my-3">
-	<h1><i class="fa fa-align-justify"></i>공지사항 리스트</h1>
+	<h1><i class="fa fa-align-justify"></i> 공지사항 리스트</h1>
 	<form action="list.do" id="searchForm">
 		<div class="row">
 			<div class="col-md-8">
@@ -46,7 +43,7 @@ $(function(){
 						<select class="form-control" id="key" name="key">
 							<option value="t">제목</option>
 					        <option value="c">내용</option>
-					        <option value="w">게시일</option>
+					        <option value="w">작성자</option>
 					        <option value="tc">제목/내용</option>
 					        <option value="tw">제목/작성자</option>
 					        <option value="cw">내용/작성자</option>
@@ -60,23 +57,23 @@ $(function(){
 							<i class="fa fa-search"></i></button>
 					</div>
 			    </div>
-			</div>
+			</div> <!-- end of class="col-md-8" -->
 			<div class="col-md-4">
 				<div class="input-group mt-3 mb-3">
 				  <div class="input-group-prepend">
-				    <span class="input-group-text">Rows/page</span>
+				    <span class="input-group-text">Rows/Page</span>
 				  </div>
-				  <select id="perPageNum" name="perPageNum" class="form-control">
-				    	<option>5</option>
-				    	<option>10</option>
-				    	<option>15</option>
-				    	<option>20</option>
+				  <select id="perPageNum" name="perPageNum"
+				   class="form-control">
+				   		<option>5</option>
+				   		<option>10</option>
+				   		<option>15</option>
+				   		<option>20</option>
 				  </select>
 				</div>
-			</div>
-		</div>
+			</div> <!-- end of class="col-md-4" -->
+		</div><!-- end of class="row" -->
 	</form>
-</div>
 
 
 
@@ -84,7 +81,7 @@ $(function(){
 	<!-- 데이터의 제목 줄 표시 -->
 	<tr>
 		<!-- th : table head - 테이블의 제목줄에 사용 -->
-		<!-- 리스트 : 번호, 제목, 작성자, 작성일, 조회수 -->
+		<!-- 리스트 : 번호, 제목, 게시일, 종료일 -->
 		<th>번호</th>
 		<th>제목</th>
 		<th>게시일</th>
@@ -104,10 +101,12 @@ $(function(){
 			<a href="writeForm.do"><button class="btn btn-primary">등록</button></a>
 		</td>
 	</tr>
-  </table> 
-	<div>
-  	<pageNav:pageNav listURI="list.do" pageObject="${pageObject }"></pageNav:pageNav>
-  </div> 
+  </table>
+  <div>
+  	<pageNav:pageNav listURI="list.do" pageObject="${pageObject}"></pageNav:pageNav>
+  </div>
+</div>
+
 
 </body>
 </html>

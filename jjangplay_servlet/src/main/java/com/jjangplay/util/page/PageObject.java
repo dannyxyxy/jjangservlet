@@ -13,7 +13,7 @@ public class PageObject {
 	
 	// 페이지 계산을 위한 정보들
 	// JSP 하단에 page로 이동하는 태그들 보여줄때 사용
-	private long perGroupPageNum;
+	private long perGroupPageNum; //하단에 몇개의 페이지링크를 보여줄 것인가?
 	private long startPage;
 	private long endPage;
 	private long totalPage;
@@ -25,11 +25,13 @@ public class PageObject {
 	
 	public PageObject() {
 		this.page = 1;
-	    this.perPageNum = 10;
-	    this.startRow = 1;
-	    this.endRow = 10;
-	    this.perGroupPageNum = 10;
+		this.perPageNum = 10;
+		this.startRow = 1;
+		this.endRow = 10;
 		
+		setPerGroupPageNum(10);
+		startPage = 1;
+		endPage = 1;
 	}
 	
 	public static PageObject getInstance(HttpServletRequest request) {
@@ -48,9 +50,7 @@ public class PageObject {
 		if (strPage != null && !strPage.equals("")) {
 			pageObject.setPage(Long.parseLong(strPage));
 		}
-		// 한페이지에 표시할 데이터 수를 받는다.
-		String strPerPageNum = request.getParameter(perPageNumName);
-		// 있으면 세팅한대로 없으면 10으로
+		String strPerPageNum = request.getParameter("perPageNum");
 		if (strPerPageNum != null && !strPerPageNum.equals("")) {
 			pageObject.setPerPageNum(Long.parseLong(strPerPageNum));
 		}
@@ -59,6 +59,7 @@ public class PageObject {
 		pageObject.setKey(request.getParameter("key"));
 		pageObject.setWord(request.getParameter("word"));
 		
+		System.out.println("PageObject.getInstance() end");
 		return pageObject;
 		
 	}
@@ -97,8 +98,8 @@ public class PageObject {
 	public long getEndPage() {
 		return endPage;
 	}
-	public void setEndPage(long endPate) {
-		this.endPage = endPate;
+	public void setEndPate(long endPage) {
+		this.endPage = endPage;
 	}
 	public long getTotalPage() {
 		return totalPage;
@@ -119,15 +120,14 @@ public class PageObject {
 		endRow = startRow + perPageNum - 1;
 		System.out.println("startRow = " + startRow);
 		System.out.println("endRow = " + endRow);
-		System.out.println("perPageNum = " + perPageNum);
-		System.out.println("perGroupPageNum = " + perGroupPageNum);
 		
-		//리스트 하단에 나타나는 페이지링크를 처리하기 위한 데이터계산
-		totalPage=(totalRow-1)/perPageNum+1;
-		//startPage, endPage
-		startPage=(page-1)/perGroupPageNum*perGroupPageNum+1;
-		endPage = startPage+perGroupPageNum-1;
-		if(endPage>totalPage) endPage=totalPage;
+		// 리스트 하단에 나타나는 페이지링크를 처리하기 위한 데이터 계산
+		totalPage = (totalRow-1)/perPageNum +1;
+		// startPage, endPage
+		startPage = (page-1)/perGroupPageNum*perGroupPageNum + 1;
+		endPage = startPage + perGroupPageNum - 1;
+		// endPage는 totalPage보다 클 수 없다.
+		if (endPage > totalPage) endPage = totalPage;
 	}
 
 	public String getKey() {
@@ -154,16 +154,17 @@ public class PageObject {
 		this.perGroupPageNum = perGroupPageNum;
 	}
 	
-	public String getNotPageQuery() throws Exception{
+	public String getNotPageQuery() throws Exception {
 		return ""
-				+"perPageNum="+getPerPageNum()
-				+"&key="+((getKey()==null)?"":getKey())
-				+"&word="+((getWord()==null)?"":URLEncoder.encode(getWord(), "utf-8"));
+			+ "perPageNum=" + getPerPageNum()
+			+ "&key=" + ((getKey() == null)?"":getKey())
+			+ "&word="
+			+ ((getWord() == null)?"":URLEncoder.encode(getWord(), "utf-8"));
 	}
 	
-	public String getPageQuery() throws Exception{
-		return "page="+getPage()
-			+"&"+getNotPageQuery();
+	public String getPageQuery() throws Exception {
+		return "page=" + getPage()
+			+ "&" + getNotPageQuery();
 	}
 
 	@Override
@@ -172,6 +173,8 @@ public class PageObject {
 				+ endRow + ", perGroupPageNum=" + perGroupPageNum + ", startPage=" + startPage + ", endPage=" + endPage
 				+ ", totalPage=" + totalPage + ", totalRow=" + totalRow + ", key=" + key + ", word=" + word + "]";
 	}
+
+	
 }
 
 

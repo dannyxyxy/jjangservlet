@@ -1,9 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>일반 게시판 글보기</title>
+
 <!-- 2.라이브러리 확인 -->
 <script type="text/javascript">
 // jquery: $(ducument).ready(function(){~~~});
@@ -56,25 +58,25 @@ $(function(){
       <div class="col-sm-4" style="background-color:yellow;">
       내용</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.content }</div>
+      ${vo.content}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       작성자</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.writer }</div>
+      ${vo.writer}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       작성일</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.writeDate }</div>
+      ${vo.writeDate}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       조회수</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.hit }</div>
+      ${ vo.hit }</div>
     </div>
     <div class="row">
       <a href="updateForm.do?no=${param.no }">
@@ -122,6 +124,10 @@ $(function(){
 					id="deleteCancelBtn">취소</button>
 			</form>
           
+          
+          
+          
+          
         </div>
         
         
@@ -129,17 +135,17 @@ $(function(){
     </div>
   </div>
   
-	<!-- 댓글처리 -->
-   <jsp:include page="reply.jsp">
-   		 <jsp:param name="postId" value="${post.id}" />
-   </jsp:include>
+
    
    
    
+   <!-- 댓글처리시작 -->
+   <jsp:include page="reply.jsp"></jsp:include>
+   <!-- 댓글처리끝 -->
    
    
    
-</div>
+</div> <!-- end of class="container" -->
 </body>
 </html>
 

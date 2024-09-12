@@ -19,7 +19,8 @@ public class BoardReplyWriteService implements Service {
 	
 	@Override
 	public Integer service(Object obj) throws Exception {
-		// [BoardController] -> (Execute) -> BoardWriteService -> [BoardDAO.write()]
+		// [BoardReplyController] -> (Execute) 
+		// -> BoardReplyWriteService -> [BoardReplyDAO.write()]
 		// 생성하고 실행한다.
 		// Object 로 선언된 obj 를 다운캐스팅해서 넘겨준다.
 		return dao.write((BoardReplyVO)obj);

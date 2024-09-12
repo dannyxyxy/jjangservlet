@@ -13,13 +13,14 @@ public class BoardReplyDeleteService implements Service {
 	
 	// dao setter
 	public void setDAO(DAO dao) {
-		// Init의 daoMap.get("boardDAO") 의 값(주소값)이 dao에 세팅된다.
+		// Init의 daoMap.get("boardReplyDAO") 의 값(주소값)이 dao에 세팅된다.
 		this.dao = (BoardReplyDAO) dao;
 	}
 	
 	@Override
 	public Integer service(Object obj) throws Exception {
-		// [BoardController] -> (Execute) -> BoardDeleteService -> [BoardDAO.delete()]
+		// [BoardReplyController] -> (Execute)
+		// -> BoardReplyDeleteService -> [BoardReplyDAO.delete()]
 		return dao.delete((BoardReplyVO)obj);
 	}
 

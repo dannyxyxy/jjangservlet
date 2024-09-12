@@ -27,7 +27,6 @@ public class BoardController {
 	
 			// 메뉴입력(uri)
 			String uri = request.getRequestURI();
-			System.out.println("uri="+uri);
 			
 			// 데이터 수집을 위한 객체선언
 			// 초기값 null 을 주어서 데이터를 받았는지 체크하고 처리한다.
@@ -53,6 +52,7 @@ public class BoardController {
 					result = Execute.execute(Init.get(uri), pageObject);
 					// 가져온 데이터를 request에 담는다.
 					request.setAttribute("list", result);
+					// pageObject를 request에 담는다.-> list.jsp에서 사용할 수 있도록
 					request.setAttribute("pageObject", pageObject);
 					
 					System.out.println("----주소창에 localhost/board/list.do 했을때 (End)----");
@@ -69,23 +69,32 @@ public class BoardController {
 					Long inc = Long.parseLong(request.getParameter("inc"));
 					
 					// 전달데이터는 글번호, 증가를 위한 값 1 (1:증가, 0:증가안함)
-					result = Execute.execute(Init.get(uri),new Long[]{no, inc});
+					result = Execute.execute(Init.get(uri),
+							new Long[]{no, inc});
+					// DB에서 가져온 데이터를 담는다.
 					request.setAttribute("vo", result);
 					
-					//댓글 페이지객체 데이터전달
-					ReplyPageObject replyPageObject = ReplyPageObject.getInstance(request);
-					request.setAttribute("replyList", 
-					Execute.execute(Init.get("/boardreply/list.do"), replyPageObject));
+					// 댓글 페이지 객체
+					// 데이터 전달 - page / perPageNum /
+					// no / replyPage / replyPerPageNum
+					ReplyPageObject replyPageObject
+						= ReplyPageObject.getInstance(request);
+					// 가지온데이터를 request에 담는다.
+					request.setAttribute("replyList",
+						Execute.execute(Init.get("/boardreply/list.do"), replyPageObject)
+						);
 					
-					
+					// DispatcherServlet에서
+					// "/WEB-INF/views/board/view.jsp" 경로를 만들어서
+					// forword 한다.
 					jsp="board/view";
 					break;
 				case "/board/writeForm.do":
-					System.out.println("3. 일반게시판 글쓰기폼");
+					System.out.println("3. 일반게시판 글쓰기 폼");
 					jsp="board/writeForm";
 					break;
 				case "/board/write.do":
-					System.out.println("3. 일반게시판 글쓰기");
+					System.out.println("3. 일반게시판 글쓰기 처리");
 					
 					// 데이터 수집(키보드) : 제목, 내용, 작성자, 비밀번호
 					String title = request.getParameter("title");
@@ -103,38 +112,45 @@ public class BoardController {
 					//[BoardController] -> (Execute) ->
 					// BoardWriteService -> BoardDAO.write()
 					Execute.execute(Init.get(uri), vo);
-					//jsp정보앞에 "redirect:"가 붙어있으면 redirect로 처리, 없으면 forword
-					jsp="redirect:list.do";
+					
+					// jsp 정보앞에 "redirect:" 가 붙어있으면 redirect로 처리
+					// 없으면 forword
+					jsp = "redirect:list.do";
 					break;
 				case "/board/updateForm.do":
-					System.out.println("4. 글수정폼");
-					no=Long.parseLong(request.getParameter("no"));
-					inc=0L;
-					result = Execute.execute(Init.get("/board/view.do"),new Long[]{no, inc});
-					request.setAttribute("vo", result);
-					jsp="board/updateForm";
-					break;
-					
-				case "/board/update.do":
-					System.out.println("4. 일반게시판 글수정");
-					
-					// updateForm에서 적은 데이터가져옴
+					System.out.println("4-1. 일반게시판 글수정 폼");
+					//수정할 글번호 입력
 					no = Long.parseLong(request.getParameter("no"));
-					title=request.getParameter("title");
-					content=request.getParameter("content");
-					writer=request.getParameter("writer");
-					pw=request.getParameter("pw");
+					inc = 0L;
+					// BoardViewService()를 실행하기 위한 uri를 직접코딩한다.
+					result = Execute.execute(Init.get("/board/view.do"),
+							new Long[]{no, inc});
+					// 가져온 데이터를 updateForm.jsp로 보내기 위해 담는다.
+					request.setAttribute("vo", result);
+					// 이동한다.
+					jsp = "board/updateForm";
+					break;
+				case "/board/update.do":
+					System.out.println("4. 일반게시판 글수정 처리");
 					
-					vo=new BoardVO();
+					// updateForm 적은 데이터를 가져온다. (DB에 저장하기 위해)
+					no = Long.parseLong(request.getParameter("no"));
+					title = request.getParameter("title");
+					content = request.getParameter("content");
+					writer = request.getParameter("writer");
+					pw = request.getParameter("pw");
+					
+					vo = new BoardVO();
 					vo.setNo(no);
 					vo.setTitle(title);
 					vo.setContent(content);
 					vo.setWriter(writer);
 					vo.setPw(pw);
 					
-					Execute.execute(Init.get(uri), vo);
-					jsp="redirect:view.do?no="+no+"&inc=0";
 					
+					Execute.execute(Init.get(uri), vo);
+					
+					jsp="redirect:view.do?no="+no+"&inc=0";
 					break;
 				case "/board/delete.do":
 					System.out.println("5. 일반게시판 글삭제");
@@ -160,26 +176,21 @@ public class BoardController {
 						System.out.println("## " + vo.getNo() + "번 글이 삭제되지 않았습니다.");
 						System.out.println("########################");
 					}
-					jsp="redirect:list.do";
+					jsp = "redirect:list.do";
 					break;
 
 				default:
-					System.out.println("잘못된 메뉴를 선택하셨습니다.===");
-					System.out.println("[0~5] 번호를 선택해야 합니다.===");
+					request.setAttribute("uri", uri);
+					jsp = "error/404";
 				} // end of switch
 			} catch (Exception e) {
 				// TODO: handle exception
 				e.printStackTrace();
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
-				System.out.println("$%@    <오류 출력> ");
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
-				// getSimpleName() : 클래스 이름만 보여주는 메서드(패키지는 안보여준다)
-				System.out.println("$%@ 타입 : " + e.getClass().getSimpleName());
-				// getMessage() : 예외의 내용을 보여주는 메서드
-				System.out.println("$%@ 내용 : " + e.getMessage() );
-				System.out.println("$%@ 조치 : 데이터 확인해 보세요");
-				System.out.println("$%@       계속 오류가 나면 전산담당자에게 문의하세요.");
-				System.out.println("$%@$%@$%@$%@$%@$%@$%@$%@$%@$%@");
+				
+				// 예외객체를 jsp에서 사용하기 위해 request에 담는다.
+				request.setAttribute("e", e);
+				
+				jsp = "error/500";
 			}
 		
 			return jsp;

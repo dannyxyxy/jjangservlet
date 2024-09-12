@@ -12,23 +12,20 @@
 <!-- 4. 우리가 만든 라이브러리 등록 -->
 <script type="text/javascript" src="boardInputUtil.js"></script>
 
-<!-- 2. 라이브러리 등록확인 -->
 <script type="text/javascript">
 $(function(){
+	//  2. 라이브러리 등록확인 
 	console.log("jquery loading......");
 	
+	// 이벤트 처리
 	$("#perPageNum").change(function(){
 		$("#searchForm").submit();
 	});
 	
-	//검색데이터 세팅
+	// 검색데이터 세팅
 	$("#key").val("${(empty pageObject.key)?'t':pageObject.key}");
-	$("#perPageNum").val("${(empty pageObject.perPageNum)?'10':pageObject.perPageNum}");
-	
-	
-	
-	
-	
+	$("#perPageNum")
+		.val("${(empty pageObject.perPageNum)?'10':pageObject.perPageNum}");
 	
 });
 </script>
@@ -60,23 +57,23 @@ $(function(){
 							<i class="fa fa-search"></i></button>
 					</div>
 			    </div>
-			</div>
+			</div> <!-- end of class="col-md-8" -->
 			<div class="col-md-4">
 				<div class="input-group mt-3 mb-3">
 				  <div class="input-group-prepend">
-				    <span class="input-group-text">Rows/page</span>
+				    <span class="input-group-text">Rows/Page</span>
 				  </div>
-				  <select id="perPageNum" name="perPageNum" class="form-control">
-				    	<option>10</option>
-				    	<option>15</option>
-				    	<option>20</option>
-				    	<option>25</option>
+				  <select id="perPageNum" name="perPageNum"
+				   class="form-control">
+				   		<option>10</option>
+				   		<option>15</option>
+				   		<option>20</option>
+				   		<option>25</option>
 				  </select>
 				</div>
-			</div>
-		</div>
+			</div> <!-- end of class="col-md-4" -->
+		</div><!-- end of class="row" -->
 	</form>
-</div>
 
 
 
@@ -107,10 +104,10 @@ $(function(){
 		</td>
 	</tr>
   </table>
-  <div>
-  	<pageNav:pageNav listURI="list.do" pageObject="${pageObject }"></pageNav:pageNav>
-  </div> 
+	<div>
+		<pageNav:pageNav listURI="list.do" pageObject="${pageObject}"></pageNav:pageNav>
+	</div>
 
-
+</div>
 </body>
 </html>

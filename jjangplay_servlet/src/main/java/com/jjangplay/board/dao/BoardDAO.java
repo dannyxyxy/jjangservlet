@@ -10,7 +10,6 @@ import com.jjangplay.board.vo.BoardVO;
 import com.jjangplay.main.dao.DAO;
 import com.jjangplay.util.db.DB;
 import com.jjangplay.util.page.PageObject;
-import com.jjangplay.util.page.ReplyPageObject;
 
 public class BoardDAO extends DAO {
 
@@ -189,6 +188,7 @@ public class BoardDAO extends DAO {
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
+			throw new Exception("예외발생 : 게시판 글보기 DB 처리중 예외발생");
 		} finally {
 			try {
 				// 7.DB닫기
@@ -198,8 +198,6 @@ public class BoardDAO extends DAO {
 				e.printStackTrace();
 			}
 		}
-		
-		
 		
 		
 		// DB에서 받은 데이터를 리턴
@@ -338,7 +336,7 @@ public class BoardDAO extends DAO {
 	
 	// pstmt에 데이터 세팅하는 메서드
 	private int setSearchDate(PageObject pageObject,
-			PreparedStatement pstmt, int idx) throws SQLException {
+			PreparedStatement pstmt, int idx) throws SQLException  {
 		String key = pageObject.getKey();
 		String word = pageObject.getWord();
 		if (word != null && !word.equals("")) {
@@ -372,7 +370,7 @@ public class BoardDAO extends DAO {
 
 	final String INCREASE = "update board set hit = hit + 1 "
 			+ " where no = ?";
-	final String VIEW = "select no, title, content, writer, writeDate, hit "
+	final String VIEW = "select no, title, content, writer, writeDate, hit, "
 			+ " from board where no = ?"; 
 	final String WRITE = "insert into board "
 			+ " (no, title, content, writer, pw) "

@@ -16,15 +16,15 @@ public class ImageListService implements Service {
 	
 	// dao setter
 	public void setDAO(DAO dao) {
-		// Init의 daoMap.get("boardDAO") 의 값(주소값)이 dao에 세팅된다.
+		// Init의 daoMap.get("imageDAO") 의 값(주소값)이 dao에 세팅된다.
 		this.dao = (ImageDAO) dao;
 	}
 
 	@Override
 	public List<ImageVO> service(Object obj) throws Exception {
-		// DB Board Table 을 가지고 리스트 쿼리 처리해서 데이터 가져오기(Return)
-		// DB 처리는 DAO 에서 처리 - BoardDAO.list()
-		// BoardController -> execute() -> [BoardListSevice] - BoardDAO.list()
+		// DB Image Table 을 가지고 리스트 쿼리 처리해서 데이터 가져오기(Return)
+		// DB 처리는 DAO 에서 처리 - ImageDAO.list()
+		// ImageController -> execute() -> [ImageListSevice] - ImageDAO.list()
 		System.out.println("--- ImageListService 실행 ---");
 		PageObject pageObject = (PageObject) obj;
 		

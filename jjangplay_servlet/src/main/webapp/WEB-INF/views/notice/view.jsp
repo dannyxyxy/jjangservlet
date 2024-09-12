@@ -1,9 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>공지사항 글보기</title>
+
 <!-- 2.라이브러리 확인 -->
 <script type="text/javascript">
 // jquery: $(ducument).ready(function(){~~~});
@@ -34,7 +36,7 @@ $(function(){
 <body>
 글번호 : ${param.no }<br>
 <div class="container">
-  <h1><i class="fa fa-file-text-o"></i>공지사항 글보기</h1>
+  <h1><i class="fa fa-file-text-o"></i> 공지사항 글보기</h1>
   
   <div class="container">
     <!-- Control the column width, and how they should appear on different devices -->
@@ -54,31 +56,31 @@ $(function(){
       <div class="col-sm-4" style="background-color:yellow;">
       내용</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.content }</div>
+      ${vo.content}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       게시일</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.startDate }</div>
+      ${vo.startDate}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       종료일</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.endDate }</div>
+      ${vo.endDate}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       작성일</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.writeDate }</div>
+      ${vo.writeDate}</div>
     </div>
     <div class="row">
       <div class="col-sm-4" style="background-color:yellow;">
       수정일</div>
       <div class="col-sm-8" style="background-color:orange;">
-      ${vo.updateDate }</div>
+      ${ vo.updateDate }</div>
     </div>
     <div class="row">
       <a href="updateForm.do?no=${param.no }">
@@ -100,7 +102,7 @@ $(function(){
       
         <!-- Modal Header -->
         <div class="modal-header">
-          <h4 class="modal-title">삭제하시겠습니까</h4>
+          <h4 class="modal-title">삭제하시겠습니까?</h4>
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>
         
@@ -112,11 +114,6 @@ $(function(){
 				값을 같이 넘겨야 할때 사용합니다.
 				값을 넘길때 가장중요한 프로퍼티는 name 이다. -->
 				<input type="hidden" name="no" value="${param.no }">
-				<!-- required : 반드시 작성되어야 한다는 의미 -->
-				<!-- pattern ^로 시작해서 $로 끝난다. -->
-				<!-- .은 \n 빼로 전부 다 사용가능 -->
-				<!-- pw는 3자에서 20자 이내로 써야한다. -->
-				<!-- title의 내용은 툴팁으로 모여준다. -->
 				<button  class="btn btn-danger">삭제</button>
 				<button type="button" class="btn btn-success"
 					id="deleteCancelBtn">취소</button>

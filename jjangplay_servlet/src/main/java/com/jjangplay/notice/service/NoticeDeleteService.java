@@ -6,10 +6,10 @@ import com.jjangplay.notice.dao.NoticeDAO;
 
 public class NoticeDeleteService implements Service {
 
-private NoticeDAO dao;
+	private NoticeDAO dao;
 	
 	public void setDAO(DAO dao) {
-		this.dao = (NoticeDAO)dao;
+		this.dao = (NoticeDAO) dao;
 	}
 	
 	@Override

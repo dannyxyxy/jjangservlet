@@ -15,15 +15,25 @@ import com.jjangplay.boardreply.service.BoardReplyListService;
 import com.jjangplay.boardreply.service.BoardReplyUpdateService;
 import com.jjangplay.boardreply.service.BoardReplyWriteService;
 import com.jjangplay.image.dao.ImageDAO;
+import com.jjangplay.image.service.ImageChangeService;
 import com.jjangplay.image.service.ImageDeleteService;
 import com.jjangplay.image.service.ImageListService;
 import com.jjangplay.image.service.ImageUpdateService;
+import com.jjangplay.image.service.ImageViewService;
 import com.jjangplay.image.service.ImageWriteService;
 import com.jjangplay.main.dao.DAO;
 import com.jjangplay.main.service.Service;
 import com.jjangplay.member.dao.MemberDAO;
+import com.jjangplay.member.service.MemberChangeGradeNoService;
+import com.jjangplay.member.service.MemberChangePhotoService;
+import com.jjangplay.member.service.MemberChangeStatusService;
+import com.jjangplay.member.service.MemberCheckIdService;
+import com.jjangplay.member.service.MemberDeleteService;
 import com.jjangplay.member.service.MemberListService;
 import com.jjangplay.member.service.MemberLoginService;
+import com.jjangplay.member.service.MemberUpdateService;
+import com.jjangplay.member.service.MemberViewService;
+import com.jjangplay.member.service.MemberWriteService;
 import com.jjangplay.notice.dao.NoticeDAO;
 import com.jjangplay.notice.service.NoticeDeleteService;
 import com.jjangplay.notice.service.NoticeListService;
@@ -65,18 +75,24 @@ public class Init {
 		serviceMap.get("/board/write.do").setDAO(daoMap.get("boardDAO"));
 		serviceMap.get("/board/update.do").setDAO(daoMap.get("boardDAO"));
 		serviceMap.get("/board/delete.do").setDAO(daoMap.get("boardDAO"));
-		
+		// 1-1 일반게시판 댓글
+		// dao 생성
 		daoMap.put("boardReplyDAO", new BoardReplyDAO());
+		// service 생성
 		serviceMap.put("/boardreply/list.do", new BoardReplyListService());
-		serviceMap.get("/boardreply/list.do").setDAO(daoMap.get("boardReplyDAO"));
 		serviceMap.put("/boardreply/write.do", new BoardReplyWriteService());
-		serviceMap.get("/boardreply/write.do").setDAO(daoMap.get("boardReplyDAO"));
 		serviceMap.put("/boardreply/update.do", new BoardReplyUpdateService());
-		serviceMap.get("/boardreply/update.do").setDAO(daoMap.get("boardReplyDAO"));
 		serviceMap.put("/boardreply/delete.do", new BoardReplyDeleteService());
+		// 조립 dao->service
+		serviceMap.get("/boardreply/list.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.get("/boardreply/write.do").setDAO(daoMap.get("boardReplyDAO"));
+		serviceMap.get("/boardreply/update.do").setDAO(daoMap.get("boardReplyDAO"));
 		serviceMap.get("/boardreply/delete.do").setDAO(daoMap.get("boardReplyDAO"));
 		
+		// 2. 공지사항
+		// dao를 생성
 		daoMap.put("noticeDAO", new NoticeDAO());
+		// 서비스생성
 		serviceMap.put("/notice/list.do", new NoticeListService());
 		serviceMap.put("/notice/view.do", new NoticeViewService());
 		serviceMap.put("/notice/write.do", new NoticeWriteService());
@@ -90,25 +106,49 @@ public class Init {
 		serviceMap.get("/notice/update.do").setDAO(daoMap.get("noticeDAO"));
 		serviceMap.get("/notice/delete.do").setDAO(daoMap.get("noticeDAO"));
 		
+		// 3. 회원관리
+		// dao를 생성
 		daoMap.put("memberDAO", new MemberDAO());
+		// 서비스생성
 		serviceMap.put("/member/login.do", new MemberLoginService());
-		serviceMap.get("/member/login.do").setDAO(daoMap.get("memberDAO"));
 		serviceMap.put("/member/list.do", new MemberListService());
+		serviceMap.put("/member/view.do", new MemberViewService());
+		serviceMap.put("/member/write.do", new MemberWriteService());
+		serviceMap.put("/member/update.do", new MemberUpdateService());
+		serviceMap.put("/member/delete.do", new MemberDeleteService());
+		serviceMap.put("/ajax/checkId.do", new MemberCheckIdService());
+		serviceMap.put("/member/changeGradeNo.do", new MemberChangeGradeNoService());
+		serviceMap.put("/member/changeStatus.do", new MemberChangeStatusService());
+		serviceMap.put("/member/changePhoto.do", new MemberChangePhotoService());
+		// 조립 dao->service
+		serviceMap.get("/member/login.do").setDAO(daoMap.get("memberDAO"));
 		serviceMap.get("/member/list.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/view.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/write.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/update.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/delete.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/ajax/checkId.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/changeGradeNo.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/changeStatus.do").setDAO(daoMap.get("memberDAO"));
+		serviceMap.get("/member/changePhoto.do").setDAO(daoMap.get("memberDAO"));
 		
+		
+		// dao를 생성
 		daoMap.put("imageDAO", new ImageDAO());
+		// 4. 이미지게시판 service 생성
 		serviceMap.put("/image/list.do", new ImageListService());
-		serviceMap.get("/image/list.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.put("/image/view.do", new ImageViewService());
 		serviceMap.put("/image/write.do", new ImageWriteService());
-		serviceMap.get("/image/write.do").setDAO(daoMap.get("ImageDAO"));
 		serviceMap.put("/image/update.do", new ImageUpdateService());
-		serviceMap.get("/boardreply/update.do").setDAO(daoMap.get("boardReplyDAO"));
 		serviceMap.put("/image/delete.do", new ImageDeleteService());
-		serviceMap.get("/boardreply/delete.do").setDAO(daoMap.get("boardReplyDAO"));
-		
-		
-
-		
+		serviceMap.put("/image/imageChange.do", new ImageChangeService());
+		// 조립 dao->service
+		serviceMap.get("/image/list.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.get("/image/view.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.get("/image/write.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.get("/image/update.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.get("/image/delete.do").setDAO(daoMap.get("imageDAO"));
+		serviceMap.get("/image/imageChange.do").setDAO(daoMap.get("imageDAO"));
 	}
 	
 	

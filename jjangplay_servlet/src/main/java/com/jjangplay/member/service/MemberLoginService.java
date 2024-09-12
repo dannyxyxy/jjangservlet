@@ -12,9 +12,9 @@ public class MemberLoginService implements Service {
 	@Override
 	public void setDAO(DAO dao) {
 		// TODO Auto-generated method stub
-		this.dao=(MemberDAO)dao;
+		this.dao = (MemberDAO) dao;
 	}
-	
+
 	@Override
 	public LoginVO service(Object obj) throws Exception {
 		// TODO Auto-generated method stub

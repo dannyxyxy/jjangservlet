@@ -13,17 +13,21 @@ public class NoticeListService implements Service {
 	private NoticeDAO dao;
 	
 	public void setDAO(DAO dao) {
-		this.dao = (NoticeDAO)dao;
+		this.dao = (NoticeDAO) dao;
 	}
 
 	@Override
 	public List<NoticeVO> service(Object obj) throws Exception {
 		// TODO Auto-generated method stub
-		PageObject pageObject = (PageObject)obj;
+		PageObject pageObject = (PageObject) obj;
+		
+		// DB에서 처리된 totalrow값을 pageObject에 보관
 		pageObject.setTotalRow(dao.getTotalRow(pageObject));
+		
 		return dao.list(pageObject);
 	}
 
-	
+
+
 
 }

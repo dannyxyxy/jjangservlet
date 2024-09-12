@@ -7,20 +7,18 @@ import com.jjangplay.member.vo.MemberVO;
 
 public class MemberDeleteService implements Service{
 
-private MemberDAO dao;
+	private MemberDAO dao;
 	
 	@Override
 	public void setDAO(DAO dao) {
 		// TODO Auto-generated method stub
-		this.dao=(MemberDAO)dao;
+		this.dao = (MemberDAO) dao;
 	}
-	
+
 	@Override
 	public Integer service(Object obj) throws Exception {
 		// TODO Auto-generated method stub
-		// MemberController:"5"->Execute->여기(MemberDeleteService)
-		// 여기에서 -> MemberDAO().delete(MemberVO)
-		return new MemberDAO().delete((MemberVO)obj);
+		return dao.delete((MemberVO)obj);
 	}
 
 }

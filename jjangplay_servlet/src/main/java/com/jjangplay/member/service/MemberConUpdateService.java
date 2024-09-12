@@ -5,15 +5,15 @@ import com.jjangplay.main.service.Service;
 import com.jjangplay.member.dao.MemberDAO;
 
 public class MemberConUpdateService implements Service {
-	
-private MemberDAO dao;
+
+	private MemberDAO dao;
 	
 	@Override
 	public void setDAO(DAO dao) {
 		// TODO Auto-generated method stub
-		this.dao=(MemberDAO)dao;
+		this.dao = (MemberDAO) dao;
 	}
-	
+
 	@Override
 	public Integer service(Object obj) throws Exception {
 		// MemberController(로그인이 되면)->Execute

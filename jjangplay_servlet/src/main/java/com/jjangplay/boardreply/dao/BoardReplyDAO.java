@@ -34,7 +34,6 @@ public class BoardReplyDAO extends DAO {
 			// 4. 실행객체에 데이터 넘기기
 			pstmt = con.prepareStatement(TOTALROW);
 			pstmt.setLong(1, pageObject.getNo());
-			
 			// 5. 실행 및 데이터 받기
 			rs = pstmt.executeQuery();
 			// 6. 표시 및 저장
@@ -72,7 +71,7 @@ public class BoardReplyDAO extends DAO {
 			// 3. SQL - BoardDAO 클래스에 final 변수로 설정 - LIST
 			// 4. 실행객체에 데이터 넘기기
 			pstmt = con.prepareStatement(LIST);
-			// 검색에 대한 데이터 세
+			// 검색에 대한 데이터 세팅
 			pstmt.setLong(1, pageObject.getNo());
 			pstmt.setLong(2, pageObject.getStartRow());
 			pstmt.setLong(3, pageObject.getEndRow());
@@ -83,9 +82,9 @@ public class BoardReplyDAO extends DAO {
 				while (rs.next()) {
 					// list 가 null 이면 ArrayList를 생성해서 저장할 수 있도록 만든다.
 					if (list == null) list = new ArrayList<BoardReplyVO>();
-					//rs -> BoardVO
+					//rs -> BoardReplyVO
 					BoardReplyVO vo = new BoardReplyVO(); // 클래스를 사용하는 기본형식
-					// BoardVO 안의 no 변수에 rs 안에 no 컬럼에 저장되어있는 값을 넘겨받는다  
+					// BoardReplyVO 안의 no 변수에 rs 안에 no 컬럼에 저장되어있는 값을 넘겨받는다  
 					vo.setRno(rs.getLong("rno"));
 					vo.setNo(rs.getLong("no"));
 					vo.setContent(rs.getString("content"));
@@ -209,7 +208,8 @@ public class BoardReplyDAO extends DAO {
 	} // end of view()
 	
 	// 3. 글쓰기
-	// [BoardController] -> (Execute) -> BoardWriteService -> [BoardDAO.write()]
+	// [BoardReplyController] -> (Execute)
+	// -> BoardReplyWriteService -> [BoardReplyDAO.write()]
 	public int write(BoardReplyVO obj) throws Exception {
 		// 결과를 저장하는 변수선언
 		int result = 0;
@@ -221,7 +221,7 @@ public class BoardReplyDAO extends DAO {
 			// 3. sql(WRITE)
 			// 4. 실행객체에 데이터 세팅
 			pstmt = con.prepareStatement(WRITE);
-			// BoardVO vo변수 안에 있는 값을 getter를 이용해서 세팅합니다.
+			// BoardReplyVO vo변수 안에 있는 값을 getter를 이용해서 세팅합니다.
 			pstmt.setLong(1, obj.getNo());
 			pstmt.setString(2, obj.getContent());
 			pstmt.setString(3, obj.getWriter());
@@ -247,8 +247,9 @@ public class BoardReplyDAO extends DAO {
 	
 	
 	// 4. 글수정
-	// [BoardController] -> (Execute) -> BoardUpdateService -> [BoardDAO.update()]
-	public int update(BoardReplyVO obj) throws Exception {
+	// [BoardReplyController] -> (Execute)
+	// -> BoardReplyUpdateService -> [BoardReplyDAO.update()]
+	public int update(BoardReplyVO vo) throws Exception {
 		// 결과 저장 변수
 		int result = 0; // SQL문이 실행성공 : 1, 실행실패 : 0
 		
@@ -259,10 +260,10 @@ public class BoardReplyDAO extends DAO {
 			// 3. SQL (UPDATE)
 			// 4. 실행객체에 데이터세팅
 			pstmt = con.prepareStatement(UPDATE);
-			pstmt.setString(1, obj.getContent());
-			pstmt.setString(2, obj.getWriter());
-			pstmt.setLong(3, obj.getRno());
-			pstmt.setString(4, obj.getPw());
+			pstmt.setString(1, vo.getContent());
+			pstmt.setString(2, vo.getWriter());
+			pstmt.setLong(3, vo.getRno());
+			pstmt.setString(4, vo.getPw());
 			// 5. 실행
 			result = pstmt.executeUpdate();
 			// 6. 보기 및 데이터저장 (실행결과확인)
@@ -282,7 +283,8 @@ public class BoardReplyDAO extends DAO {
 	}
 	
 	// 5. 글삭제
-	// [BoardController] -> (Execute) -> BoardDeleteService -> [BoardDAO.delete()]
+	// [BoardReplyController] -> (Execute)
+	// -> BoardReplyDeleteService -> [BoardReplyDAO.delete()]
 	public int delete(BoardReplyVO obj) throws Exception {
 		int result = 0;
 		
@@ -312,22 +314,27 @@ public class BoardReplyDAO extends DAO {
 		} 
 		
 		return result;
-
 	}
 	
 	
 	// SQL 문
 	// LIST의 페이지 처리
 	final String LIST = ""
-			+ " select rno, no, content, writer, writeDate from "
+		+ " select rno, no, content, writer, writeDate from "
 			+ " (select rownum rnum, rno, no, content, writer, writeDate from "
-			+ " (select rno, no, content, writer, "
-			+ " to_char(writeDate, 'yyyy-dd-mm') writeDate "
-			+ " from board_reply where no=? order by rno desc)) "
-			+ " where rnum>=? and rnum<=?";
+				+ " (select rno, no, content, writer, "
+				+ " to_char(writeDate, 'yyyy-dd-mm') writeDate "
+				+ " from board_reply "
+				+ " where no = ? "//일반게시판 글번호에 맞는 댓글만 보여주기위해
+				+ " order by rno desc"
+				+ ")"
+			+ ") "
+		+ " where rnum>=? and rnum<=?";
 	
+
 	
-	final String TOTALROW = "select count(*) from board_reply where no=?";
+	final String TOTALROW = "select count(*) from board_reply "
+			+ " where no = ? ";
 
 	final String INCREASE = "update board set hit = hit + 1 "
 			+ " where no = ?";

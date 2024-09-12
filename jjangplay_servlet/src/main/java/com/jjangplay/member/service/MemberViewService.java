@@ -6,21 +6,21 @@ import com.jjangplay.member.dao.MemberDAO;
 import com.jjangplay.member.vo.MemberVO;
 
 public class MemberViewService implements Service{
-	
-private MemberDAO dao;
+
+	private MemberDAO dao;
 	
 	@Override
 	public void setDAO(DAO dao) {
 		// TODO Auto-generated method stub
-		this.dao=(MemberDAO)dao;
+		this.dao = (MemberDAO) dao;
 	}
-	
+
 	@Override
 	public MemberVO service(Object obj) throws Exception {
 		// TODO Auto-generated method stub
 		// MemberController->Execute->여기에 왔습니다.
 		// 여기서 -> MemberDAO.view(String id) 로 넘어갑니다.
-		return new MemberDAO().view((String)obj);
+		return dao.view((String)obj);
 		
 	//	1. new MemberDAO().view((String) obj);
 	

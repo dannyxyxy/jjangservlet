@@ -28,8 +28,11 @@ public class EncodingFilter extends HttpFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		// TODO Auto-generated method stub
 		// place your code here
-		System.out.println("EncodingFilter.doFilter()");
-		request.setCharacterEncoding("utf-8"); 	//들어오는 데이터에 대한 인코딩(한글처리)
+		System.out.println("EncodingFilter.doFilter() ---------------");
+		// 한글처리 - 들어오는 데이터에 대한 인코딩
+		request.setCharacterEncoding("utf-8");
+		
+
 		// pass the request along the filter chain
 		chain.doFilter(request, response);
 	}

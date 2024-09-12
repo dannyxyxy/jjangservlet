@@ -29,8 +29,8 @@ public class MemberDAO extends DAO {
 			// 3.SQL (LIST)
 			// 4.실행객체에 데이터세팅
 			pstmt = con.prepareStatement(LIST);
-			pstmt.setLong(1,obj.getStartRow());
-			pstmt.setLong(2,obj.getEndRow());
+			pstmt.setLong(1, obj.getStartRow());
+			pstmt.setLong(2, obj.getEndRow());
 			// 5.실행
 			rs = pstmt.executeQuery();
 			// 6.데이터저장
@@ -154,9 +154,46 @@ public class MemberDAO extends DAO {
 		// 결과값 리턴(호출한 메서드에 넘겨줌)
 		return result;
 	}
-	
+
+	// 3-1. 아이디 중복체크 처리
+	// MemberController("3")->Execute->MemberCheckIdService->여기까지 왔습니다.
+ 	public String checkId(String id) throws Exception {
+		// 결과를 저장할 수 있는 변수
+		String result = null;
+		try {
+			// 1.드라이버확인
+			// 2.DB연결
+			con = DB.getConnection();
+			// 3.SQL (WRITE)
+			// 4.실행객체에 데이터세팅
+			pstmt = con.prepareStatement(CHECKID);
+			pstmt.setString(1, id);
+
+			// 5.실행
+			rs = pstmt.executeQuery();
+			
+			// 6.결과담기
+			if (rs != null && rs.next()) {
+				result = rs.getString("id");
+			}
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			throw new Exception("예외발생 : 아이디중복체크 중 DB처리중 예외가 발생했습니다.");
+		} finally {
+			// 7.DB닫기
+			DB.close(con, pstmt);
+		}
+		
+		// 결과값 리턴(호출한 메서드에 넘겨줌)
+		return result;
+	}
+
+ 	
  	// 4. 회원정보 수정
- 	// MemberController("4")->Execute->MemberUpdateService->여기까지
+ 	// MemberController("/member/update.do")
+ 	// ->Execute->MemberUpdateService->여기까지
  	public int update(MemberVO vo) throws Exception {
  		// 결과받을변수
  		int result = 0;
@@ -210,6 +247,9 @@ public class MemberDAO extends DAO {
  			con = DB.getConnection();
  			// 3.SQL (DELETE)
  			// 4.실행객체에 데이터 세팅
+ 			System.out.println("id="+vo.getId());
+			System.out.println("pw="+vo.getPw());
+			System.out.println(DELETE);
  			pstmt = con.prepareStatement(DELETE);
  			pstmt.setString(1, vo.getId());
  			pstmt.setString(2, vo.getPw());
@@ -250,6 +290,7 @@ public class MemberDAO extends DAO {
 			con = DB.getConnection();
 			// 3.SQL (LOGIN)
 			// 4.실행객체에 데이터세팅
+			
 			pstmt = con.prepareStatement(LOGIN);
 			pstmt.setString(1, vo.getId());
 			pstmt.setString(2, vo.getPw());
@@ -322,8 +363,8 @@ public class MemberDAO extends DAO {
 	}// end of conUpdate()
 	
 	
-	// 7. 회원등급 및 상태변경
-	public int update_admin(MemberVO vo) throws Exception {
+	// 회원등급 변경
+	public int changeGradeNo(MemberVO vo) throws Exception {
 		// 결과 저장 변수
 		int result = 0;
 		
@@ -331,12 +372,11 @@ public class MemberDAO extends DAO {
 			// 1.드라이버확인
 			// 2.DB연결
 			con = DB.getConnection();
-			// 3.SQL (UPDATE_ADMIN)
+			// 3.SQL (CHANGEGRADENO)
 			// 4.실행객체에 데이터세팅
-			pstmt = con.prepareStatement(UPDATE_ADMIN);
+			pstmt = con.prepareStatement(CHANGEGRADENO);
 			pstmt.setInt(1, vo.getGradeNo());
-			pstmt.setString(2, vo.getStatus());
-			pstmt.setString(3, vo.getId());
+			pstmt.setString(2, vo.getId());
 			// 5.실행
 			result = pstmt.executeUpdate();
 			// 6.결과확인
@@ -350,7 +390,7 @@ public class MemberDAO extends DAO {
 				throw e;
 			}
 			else {
-				throw new Exception("예외발생 : 회원등급 및 상태 DB처리 중 예외발생");
+				throw new Exception("예외발생 : 회원등급 DB처리 중 예외발생");
 			}
 		} finally {
 			// 7.DB닫기
@@ -359,18 +399,106 @@ public class MemberDAO extends DAO {
 		
 		// 결과 리턴
 		return result;
-	}
+	}// end of changeGradeNo()
+	
+
+	// 회원상태 변경
+	public int changeStatus(MemberVO vo) throws Exception {
+		// 결과 저장 변수
+		int result = 0;
+		
+		try {
+			// 1.드라이버확인
+			// 2.DB연결
+			con = DB.getConnection();
+			// 3.SQL (CHANGESTATUS)
+			// 4.실행객체에 데이터세팅
+			pstmt = con.prepareStatement(CHANGESTATUS);
+			pstmt.setString(1, vo.getStatus());
+			pstmt.setString(2, vo.getId());
+			// 5.실행
+			result = pstmt.executeUpdate();
+			// 6.결과확인
+			if (result == 0) {
+ 				throw new Exception("예외발생 : 아이디가 맞지 않습니다.");
+ 			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			if (e.getMessage().indexOf("예외발생")>=0) {
+				throw e;
+			}
+			else {
+				throw new Exception("예외발생 : 회원상태 DB처리 중 예외발생");
+			}
+		} finally {
+			// 7.DB닫기
+			DB.close(con, pstmt);
+		}
+		
+		// 결과 리턴
+		return result;
+	}// end of changeStatus()
+	
+ 	// 회원정보의 사진 수정
+ 	// MemberController("/member/changePhoto.do")
+ 	// ->Execute->MemberChangePhotoService->여기까지
+ 	public int changePhoto(MemberVO vo) throws Exception {
+ 		// 결과받을변수
+ 		int result = 0;
+ 		try {
+			// 1.드라이버확인
+ 			// 2.DB연결
+ 			con = DB.getConnection();
+ 			// 3.SQL (UPDATE)
+ 			// 4.실행객체에 데이터세팅
+ 			pstmt = con.prepareStatement(CHANGEPHOTO);
+ 			// pstmt 에 데이터 세팅순서는
+ 			// SQL문에서 적은 ?순서대로 1번부터 세팅해준다.
+ 			pstmt.setString(1, vo.getPhoto());
+ 			pstmt.setString(2, vo.getId());
+ 			// 5.실행
+ 			result = pstmt.executeUpdate();
+ 			// 6.결과확인
+ 			if (result == 0) {
+ 				throw new Exception("예외발생 : 아이디가 맞지 않습니다.");
+ 			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+			if (e.getMessage().indexOf("예외발생")>=0) throw e;
+			else {
+				throw new Exception("예외발생 : 회원 정보 사진 수정 DB 처리중 예외발생");
+			}
+		} finally {
+			// 7.DB닫기
+			DB.close(con, pstmt);
+		}
+ 		
+ 		return result;
+ 	}
+
+
+	
+	
 	
 	final String LIST = ""
-			+ " select id, name, birth, tel, gradeNo, gradeName, status, photo from "
-			+ " (select rownum rnum, id, name, birth, tel, gradeNo, gradeName, status, photo from "
-			+ " (select m.id, m.name, "
-			+ " to_char(m.birth, 'yyyy-mm-dd') birth, m.tel, "
-			+ " m.gradeNo, g.gradeName, m.status, m.photo "
-			+ " from member m, grade g "
-			+ " where m.gradeNo = g.gradeNo "
-			+ " order by id asc))"
+			+ " select id, name, birth, tel, gradeNo, "
+			+ " gradeName, status, photo from "
+				+ " (select rownum rnum, id, name, birth, tel,"
+				+ " gradeNo, gradeName, status, photo from "
+					+ " (select m.id, m.name, "
+					+ " to_char(m.birth, 'yyyy-mm-dd') birth, m.tel, "
+					+ " m.gradeNo, g.gradeName, m.status, m.photo "
+					+ " from member m, grade g "
+					+ " where m.gradeNo = g.gradeNo "
+					+ " order by id asc"
+					+ ")"
+				+ ")"
 			+ " where rnum>=? and rnum<=?";
+	
+	
+	
 	final String VIEW = "select m.id, m.pw, m.name, m.gender, "
 			+ " to_char(m.birth, 'yyyy-mm-dd') birth, m.tel, m.email,"
 			+ " to_char(m.regDate, 'yyyy-mm-dd') regDate, "
@@ -382,6 +510,8 @@ public class MemberDAO extends DAO {
 	final String WRITE = "insert into member "
 			+ " (id, pw, name, gender, birth, tel, email, photo) "
 			+ " values (?, ?, ?, ?, ?, ?, ?, ?)";
+	
+	final String CHECKID = "select id from member where id=?";
 	
 	final String UPDATE = "update member "
 			+ " set name = ?, gender = ?, birth = ?, "
@@ -401,16 +531,15 @@ public class MemberDAO extends DAO {
 	final String UPDATE_CONDATE = "update member "
 			+ " set conDate = sysDate where id = ?";
 	
-	final String UPDATE_ADMIN = "update member "
-			+ " set gradeNo = ?, status = ? "
-			+ " where id = ?";
 	
+	final String CHANGEGRADENO = "update member "
+			+ " set gradeNo = ? where id = ?";
 	
+	final String CHANGESTATUS = "update member "
+			+ " set status = ? where id = ?";
 	
-	
-	
-	
-	
+	final String CHANGEPHOTO = "update member "
+			+ " set photo = ? where id = ?";
 	
 	
 	

@@ -1,4 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -54,29 +55,40 @@ $(function(){
     <div class="form-group">
       <label for="no">번호</label>
       <input type="text" class="form-control"
-       id="no" name="no" readonly value="${vo.no }">
+       id="no" name="no" readonly value="${ vo.no }">
     </div>
     <div class="form-group">
       <label for="title">제목</label>
       <input type="text" class="form-control"
-       id="title" name="title" value="${vo.title }" pattern="^[^ .].{2,99}$" title="맨앞에 공백문자불가."
-       placeholder="제목입력">
+       id="title" name="title" value="${ vo.title }"
+       pattern="^[^ .].{2,99}$"
+       title="맨앞에 공백문자 불가 : 3~100자 입력"
+       placeholder="제목입력: 3자이상 100자 이내"
+       >
     </div>
     <div class="form-group">
       <label for="content">내용</label>
+      <pre>
       <textarea class="form-control" rows="7"
-       id="content" name="content">${vo.content }</textarea>
+       id="content" name="content">${ vo.content }</textarea>
+      </pre>
     </div>
     <div class="form-group">
       <label for="writer">작성자</label>
       <input type="text" class="form-control"
-       id="writer" name="writer"value="${vo.writer } " pattern="^[a-zA-Z가-힝].{2,10}$" title="맨앞에 공백문자불가."
-       placeholder="">
+       id="writer" name="writer"value="${ vo.writer }"
+       pattern="^[a-zA-Z가-힝]{2,10}$"
+       title="한글과 영어만 입력 : 2~10자 입력"
+       placeholder="이름은 한글과 영어만 입력가능합니다."
+       >
     </div>
     <div class="form-group">
       <label for="pw">비밀번호확인</label>
       <input type="password" class="form-control" id="pw"
-       placeholder="본인확인용비밀번호" name="pw" pattern="^.{3,20}$" title="맨앞에 공백문자불가.">
+       placeholder="비밀번호입력" name="pw"
+       pattern="^.{3,20}$"
+       title="3~20자 입력가능"
+       placeholder="본인확인용 비밀번호">
     </div>
     <button type="submit" class="btn btn-primary">수정</button>
     <button type="reset" class="btn btn-secondary">다시쓰기</button>

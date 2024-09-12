@@ -5,6 +5,7 @@
 <head>
 <meta charset="UTF-8">
 <title>일반 게시판 글 등록 폼</title>
+
 <!-- 4. 우리가 만든 라이브러리 등록 -->
 <script type="text/javascript" src="boardInputUtil.js"></script>
 

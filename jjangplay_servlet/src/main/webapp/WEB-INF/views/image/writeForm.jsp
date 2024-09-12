@@ -4,21 +4,20 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>이미지게시판 업데이트폼</title>
-<!-- 4. 우리가 만든 라이브러리 등록 -->
-<script type="text/javascript" src="boardInputUtil.js"></script>
-
+<title>이미지 게시판 등록 폼</title>
 </head>
 <body>
-<!-- 3. 내용작성 -->
+
 <div class="container">
-  <h2><i class="fa fa-edit"></i> 이미지게시판 업데이트폼</h2>
+  <h2><i class="fa fa-edit"></i> 이미지 게시판 글 등록 폼</h2>
   <form action="write.do" method="post" enctype="multipart/form-data">
   	<input type="hidden" name="perPageNum" value="${param.perPageNum }">
     <div class="form-group">
       <label for="title">제목</label>
-      <input type="text" class="form-control" id="title" required
-      	pattern="^[^ .].{2.99}$" placeholder="제목 입력" name="title">
+      <input type="text" class="form-control" id="title"
+      	pattern="^[^ .].{2.99}$" required
+      	title="맨앞에 공백문자 불가, 3~100자입력"
+       placeholder="제목 입력" name="title">
     </div>
     <div class="form-group">
       <label for="content">내용</label>
@@ -27,11 +26,13 @@
     </div>
     <div class="form-group">
       <label for="imageFile">첨부이미지</label>
-      <input type="file" class="form-control" id="imageFile" required name="imageFile">
+      <input type="file" class="form-control" id="imageFile" required
+      	name="imageFile">
     </div>
     <button type="submit" class="btn btn-primary">등록</button>
     <button type="reset" class="btn btn-secondary">새로입력</button>
-    <button type="button" class="btn btn-success" onclick="history.back()" id="cancelBtn">취소</button>
+    <button type="button" class="btn btn-success" onclick="history.back();"
+    	id="cencelBtn">취소</button>
   </form>
 </div>
 </body>
